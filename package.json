@@ -27,5 +27,8 @@
   "homepage": "https://github.com/mastermoo/react-native-action-button",
   "dependencies": {
     "prop-types": "^15.5.10"
+  },
+  "devDependencies": {
+    "prettier": "^1.5.3"
   }
 }

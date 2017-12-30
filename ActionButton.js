@@ -5,7 +5,7 @@ import {
   Text,
   View,
   Animated,
-  TouchableOpacity,
+  TouchableOpacity
 } from "react-native";
 import ActionButtonItem from "./ActionButtonItem";
 import {
@@ -81,9 +81,8 @@ export default class ActionButton extends Component {
       {
         elevation: this.props.elevation,
         zIndex: this.props.zIndex,
-        justifyContent: this.props.verticalOrientation === "up"
-          ? "flex-end"
-          : "flex-start"
+        justifyContent:
+          this.props.verticalOrientation === "up" ? "flex-end" : "flex-start"
       }
     ];
   }
@@ -177,22 +176,28 @@ export default class ActionButton extends Component {
     };
 
     const Touchable = getTouchableComponent(this.props.useNativeFeedback);
-    const parentStyle = isAndroid &&
-      this.props.fixNativeFeedbackRadius
-      ? {
-          right: this.props.offsetX,
-          zIndex: this.props.zIndex,
-          borderRadius: this.props.size / 2,
-          width: this.props.size
-        }
-      : { marginHorizontal: this.props.offsetX, zIndex: this.props.zIndex };
+    const parentStyle =
+      isAndroid && this.props.fixNativeFeedbackRadius
+        ? {
+            right: this.props.offsetX,
+            zIndex: this.props.zIndex,
+            borderRadius: this.props.size / 2,
+            width: this.props.size
+          }
+        : { marginHorizontal: this.props.offsetX, zIndex: this.props.zIndex };
+
+    const buttonIcon =
+      this.state.active && this.props.activeButtonIcon
+        ? this._renderActiveButtonIcon()
+        : this._renderButtonIcon();
 
     return (
-      <View style={[
-        parentStyle,
-        !this.props.hideShadow && shadowStyle,
-        !this.props.hideShadow && this.props.shadowStyle
-      ]}
+      <View
+        style={[
+          parentStyle,
+          !this.props.hideShadow && shadowStyle,
+          !this.props.hideShadow && this.props.shadowStyle
+        ]}
       >
         <Touchable
           testID={this.props.testID}
@@ -209,15 +214,42 @@ export default class ActionButton extends Component {
           onPressIn={this.props.onPressIn}
           onPressOut={this.props.onPressOut}
         >
-          <Animated.View
-            style={wrapperStyle}
-          >
+          <Animated.View style={wrapperStyle}>
             <Animated.View style={[buttonStyle, animatedViewStyle]}>
-              {this._renderButtonIcon()}
+              {buttonIcon}
             </Animated.View>
           </Animated.View>
         </Touchable>
       </View>
+    );
+  }
+
+  _renderActiveButtonIcon() {
+    const {
+      icon,
+      btnOutRangeTxt,
+      buttonTextStyle,
+      activeButtonIcon
+    } = this.props;
+    if (icon) return icon;
+
+    const textColor = buttonTextStyle.color || "rgba(255,255,255,1)";
+
+    return (
+      <Animated.Text
+        style={[
+          styles.btnText,
+          buttonTextStyle,
+          {
+            color: this.anim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [textColor, btnOutRangeTxt || textColor]
+            })
+          }
+        ]}
+      >
+        {activeButtonIcon}
+      </Animated.Text>
     );
   }
 
@@ -257,9 +289,8 @@ export default class ActionButton extends Component {
       alignSelf: "stretch",
       // backgroundColor: 'purple',
       justifyContent: verticalOrientation === "up" ? "flex-end" : "flex-start",
-      paddingTop: this.props.verticalOrientation === "down"
-        ? this.props.spacing
-        : 0,
+      paddingTop:
+        this.props.verticalOrientation === "down" ? this.props.spacing : 0,
       zIndex: this.props.zIndex
     };
 
